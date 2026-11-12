@@ -13,7 +13,9 @@
   <meta property="og:url" content="https://www.akashyanpure.com/" />
   <meta property="og:title" content="Akash Yanpure — Data Engineer" />
   <meta property="og:description" content="Data platforms for analytics, ML & GenAI. Real-time, near-real-time and batch — governed end to end." />
-  <meta property="og:image" content="https://www.akashyanpure.com/assets/akash.jpg" />
+  <meta property="og:image" content="https://www.akashyanpure.com/assets/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%2322d3ee'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%2305070d'/%3E%3Ctext x='32' y='42' font-family='monospace' font-size='26' font-weight='700' text-anchor='middle' fill='url(%23g)'%3EAY%3C/text%3E%3C/svg%3E" />
@@ -67,30 +69,29 @@
 
   <main id="top">
     <!-- ============ HERO ============ -->
-    <section class="hero">
-      <canvas id="heroCanvas" class="hero__canvas" aria-hidden="true"></canvas>
+    <section class="hero" id="hero">
       <div class="container hero__inner">
         <div class="hero__copy">
-          <p class="eyebrow"><span class="pulse-dot"></span> Open to new opportunities · London, UK</p>
-          <h1 class="hero__title">
-            <span class="hero__hello">Hi, I'm</span>
-            <span class="gradient-text">Akash Yanpure</span>
-          </h1>
-          <p class="hero__role">Data Engineer <span class="sep">/</span> ML &amp; GenAI Data Platforms</p>
-          <p class="hero__lead">
-            I design and run the data platforms that analytics, machine learning and GenAI depend on.
-            That means real-time, near-real-time and batch pipelines, governed end to end and automated from commit to cluster.
-          </p>
-          <p class="hero__typed mono" aria-live="polite">
-            <span class="prompt">&gt;</span> building <span id="typed" class="typed"></span><span class="caret">▌</span>
-          </p>
-          <div class="hero__ctas">
-            <a href="#contact" class="btn btn--primary">Let's talk <span aria-hidden="true">→</span></a>
-            <a href="assets/Akash_Yanpure_Resume.pdf" class="btn btn--ghost" target="_blank" rel="noopener">Download résumé</a>
-            <a href="https://github.com/akashyanpure" class="btn btn--icon" target="_blank" rel="noopener" aria-label="GitHub profile">
+        <p class="eyebrow"><span class="pulse-dot"></span> Open to new opportunities · London, UK</p>
+        <h1 class="hero__title">
+          <span class="hero__hello">Hi, I'm</span>
+          <span class="gradient-text">Akash Yanpure</span>
+        </h1>
+        <p class="hero__role">Data Engineer <span class="sep">/</span> ML &amp; GenAI Data Platforms</p>
+        <p class="hero__lead">
+          I design and run the data platforms that analytics, machine learning and GenAI depend on.
+          That means real-time, near-real-time and batch pipelines, governed end to end and automated from commit to cluster.
+        </p>
+        <p class="hero__typed mono" aria-live="polite">
+          <span class="prompt">&gt;</span> building <span id="typed" class="typed"></span><span class="caret">▌</span>
+        </p>
+        <div class="hero__ctas">
+          <a href="#contact" class="btn btn--primary">Let's talk <span aria-hidden="true">→</span></a>
+          <a href="assets/Akash_Yanpure_Resume.pdf" class="btn btn--ghost" target="_blank" rel="noopener">Download résumé</a>
+          <a href="https://github.com/akashyanpure" class="btn btn--icon" target="_blank" rel="noopener" aria-label="GitHub profile">
               <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.8 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg>
             </a>
-          </div>
+        </div>
         </div>
 
         <div class="hero__visual">
@@ -99,7 +100,7 @@
             <div class="holo__ring holo__ring--2"></div>
             <div class="holo__ring holo__ring--3"></div>
             <div class="holo__frame">
-              <img src="assets/akash.jpg" alt="Portrait of Akash Yanpure" width="1080" height="1350" fetchpriority="high" />
+              <img src="assets/akash.jpg" alt="Portrait of Akash Yanpure" width="960" height="1200" fetchpriority="high" />
               <div class="holo__scan" aria-hidden="true"></div>
               <div class="holo__corner holo__corner--tl"></div>
               <div class="holo__corner holo__corner--tr"></div>
@@ -114,14 +115,12 @@
               <span class="orbit__chip" style="--a:240deg">AWS</span>
               <span class="orbit__chip" style="--a:300deg">LLMs</span>
             </div>
-            <div class="holo__badge mono">
-              <span class="status-dot"></span> status: <b>shipping</b>
-            </div>
+            <div class="holo__badge mono"><span class="status-dot"></span> status: <b>shipping</b></div>
           </div>
         </div>
       </div>
 
-      <div class="container">
+      <div class="container hero__stats">
         <dl class="stats">
           <div class="stat"><dt><span class="count" data-to="7">0</span>+</dt><dd>years building data &amp; software systems</dd></div>
           <div class="stat"><dt><span class="count" data-to="3">0</span></dt><dd>latency tiers in production: real-time, NRT &amp; batch</dd></div>
@@ -129,7 +128,51 @@
           <div class="stat"><dt>MSc</dt><dd>Data Science, Kingston University London</dd></div>
         </dl>
       </div>
-      <a href="#about" class="scroll-hint" aria-label="Scroll to About"><span></span></a>
+      <a href="#story" class="scroll-hint" aria-label="Scroll to explore"><span></span></a>
+    </section>
+
+    <!-- ============ STORY (3D scroll chapters) ============ -->
+    <section class="story" id="story" aria-label="What I build, chapter by chapter">
+      <div class="chapter" data-shape="1">
+        <div class="chapter__sticky"><div class="container chapter__inner">
+          <p class="chapter__kicker mono">01 · lakehouse platforms</p>
+          <h2 class="chapter__title"><span>Raw.</span> <span>Trusted.</span> <span class="gradient-text">Curated.</span></h2>
+          <p class="chapter__body">Data lands as-is, gets validated, then is modelled into analytics-ready datasets on Snowflake, Redshift and PostgreSQL, with governance, lineage and quality built in.</p>
+          <div class="chips chapter__chips"><span>Snowflake</span><span>Redshift</span><span>PostgreSQL</span><span>dbt</span></div>
+        </div></div>
+      </div>
+      <div class="chapter" data-shape="2">
+        <div class="chapter__sticky"><div class="container chapter__inner">
+          <p class="chapter__kicker mono">02 · orchestration</p>
+          <h2 class="chapter__title"><span>Orchestrated</span> <span class="gradient-text">end to end.</span></h2>
+          <p class="chapter__body">Real-time, near-real-time and batch pipelines run as Airflow DAGs. Dependencies are resolved, failures retried and every run is observable.</p>
+          <div class="chips chapter__chips"><span>Apache Airflow</span><span>AWS Glue</span><span>dbt</span><span>Python</span></div>
+        </div></div>
+      </div>
+      <div class="chapter" data-shape="3">
+        <div class="chapter__sticky"><div class="container chapter__inner">
+          <p class="chapter__kicker mono">03 · distributed compute</p>
+          <h2 class="chapter__title"><span>Parallel</span> <span class="gradient-text">by design.</span></h2>
+          <p class="chapter__body">Spark splits the work into partitions. Containerised workers on Kubernetes (EKS) scale out, provisioned with Terraform and shipped through CI/CD.</p>
+          <div class="chips chapter__chips"><span>Spark</span><span>Docker</span><span>EKS</span><span>Terraform</span></div>
+        </div></div>
+      </div>
+      <div class="chapter" data-shape="4">
+        <div class="chapter__sticky"><div class="container chapter__inner">
+          <p class="chapter__kicker mono">04 · warehousing &amp; governance</p>
+          <h2 class="chapter__title"><span>Warehoused.</span> <span class="gradient-text">Governed.</span></h2>
+          <p class="chapter__body">AWS and Snowflake certified. I've led data cataloguing, access controls and lineage tracking so every dataset is traceable and compliant.</p>
+          <div class="chips chapter__chips"><span class="cert">AWS ✓</span><span class="cert">Snowflake ✓</span><span>Lineage</span><span>RBAC</span></div>
+        </div></div>
+      </div>
+      <div class="chapter" data-shape="5">
+        <div class="chapter__sticky"><div class="container chapter__inner">
+          <p class="chapter__kicker mono">05 · machine learning &amp; genai</p>
+          <h2 class="chapter__title"><span>Data that</span> <span class="gradient-text">AI can trust.</span></h2>
+          <p class="chapter__body">I've gone from shipping a GPT-3 chatbot in 2021 to powering ML and GenAI use cases today, building the data foundation that models stand on.</p>
+          <div class="chips chapter__chips"><span>GenAI / LLMs</span><span>TensorFlow</span><span>NLP</span><span>MSc Data Science</span></div>
+        </div></div>
+      </div>
     </section>
 
     <!-- ============ ABOUT ============ -->
@@ -151,7 +194,6 @@
             engineers I mentor.
           </p>
         </div>
-
         <div class="terminal reveal" aria-label="Career summary rendered as an Airflow DAG run">
           <div class="terminal__bar">
             <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
@@ -159,6 +201,7 @@
           </div>
           <pre class="terminal__body mono" id="terminal"></pre>
         </div>
+
       </div>
 
       <div class="container">
@@ -421,7 +464,14 @@
     </div>
   </footer>
 
+  <canvas id="world" class="world" aria-hidden="true"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha384-Z3REaz79l2IaAZqJsSABtTbhjgOUYyV3p90XNnAPCSHg3EMTz1fouunq9WZRtj3d" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
   <script src="js/main.js" defer></script>
+  <script src="js/world.js" defer></script>
+  <script src="js/story.js" defer></script>
   <script src="js/lab.js" defer></script>
   <script src="js/ai.js" defer></script>
 </body>

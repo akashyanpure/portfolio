@@ -2,13 +2,15 @@
 
 Personal portfolio of Akash Yanpure, Data Engineer. Live at **https://www.akashyanpure.com**.
 
-Hand-built static site (HTML, CSS, Canvas), so there is no build step and no dependencies.
+Hand-built static site (HTML, CSS, Canvas, WebGL), so there is no build step. Three.js r128 and GSAP 3.12.5 load from cdnjs with integrity hashes.
 
 ```
 site/
   index.html        page content (edit text here)
   css/style.css     design system & layout
-  js/main.js        shared canvas engine, hero network, nav, terminal
+  js/main.js        shared canvas engine, nav, typing, terminal
+  js/world.js       Three.js particle world morphing between data shapes on scroll
+  js/story.js       GSAP ScrollTrigger choreography (chapters + 3D section entrances)
   js/lab.js         six animated data-engineering concepts
   js/ai.js          next-token prediction demo + animated RAG pipeline
   assets/           photo + résumé PDF

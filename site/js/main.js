@@ -275,49 +275,4 @@
     catch { copyBtn.textContent = copyBtn.dataset.email; }
     setTimeout(() => (copyBtn.textContent = "Copy email"), 2200);
   });
-
-  /* ---------- hero: drifting data-mesh with packets ---------- */
-  const heroCanvas = document.getElementById("heroCanvas");
-  const nodes = [], packets = [];
-  const mouse = { x: -9999, y: -9999 };
-  heroCanvas.parentElement.addEventListener("pointermove", (e) => {
-    const r = heroCanvas.getBoundingClientRect();
-    mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
-  });
-  heroCanvas.parentElement.addEventListener("pointerleave", () => { mouse.x = mouse.y = -9999; });
-  const palette = [C.cyan, C.violet, C.pink, C.cyan, C.cyan];
-
-  createScene(heroCanvas, (ctx, w, h, dt) => {
-    const target = Math.round(Math.min(90, (w * h) / 16000));
-    while (nodes.length < target) nodes.push({ x: rand(0, w), y: rand(0, h), vx: rand(-12, 12), vy: rand(-12, 12), r: rand(1, 2.2), c: pick(palette) });
-    nodes.length = Math.min(nodes.length, target);
-    const maxD = Math.min(150, w / 7);
-
-    for (const n of nodes) {
-      n.x += n.vx * dt; n.y += n.vy * dt;
-      if (n.x < 0 || n.x > w) n.vx *= -1;
-      if (n.y < 0 || n.y > h) n.vy *= -1;
-      const dx = mouse.x - n.x, dy = mouse.y - n.y, d = Math.hypot(dx, dy);
-      if (d < 180 && d > 1) { n.x += (dx / d) * 18 * dt; n.y += (dy / d) * 18 * dt; }
-    }
-    ctx.lineWidth = 1;
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        const d = Math.hypot(a.x - b.x, a.y - b.y);
-        if (d < maxD) {
-          ctx.strokeStyle = `rgba(56,189,248,${(1 - d / maxD) * 0.16})`;
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-          if (packets.length < 26 && Math.random() < 0.0009) packets.push({ a, b, p: 0, c: pick(palette) });
-        }
-      }
-    }
-    for (const n of nodes) { ctx.fillStyle = n.c; ctx.globalAlpha = 0.7; ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, 6.283); ctx.fill(); }
-    ctx.globalAlpha = 1;
-    for (let i = packets.length - 1; i >= 0; i--) {
-      const k = packets[i]; k.p += dt * 0.9;
-      if (k.p >= 1 || Math.hypot(k.a.x - k.b.x, k.a.y - k.b.y) > maxD) { packets.splice(i, 1); continue; }
-      dot(ctx, k.a.x + (k.b.x - k.a.x) * k.p, k.a.y + (k.b.y - k.a.y) * k.p, 2.2, k.c, 12);
-    }
-  });
 })();
