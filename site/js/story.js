@@ -10,6 +10,10 @@
   const gsap = window.gsap, ST = window.ScrollTrigger;
   if (!gsap || !ST) return; // CSS/IO fallback in main.js keeps the page usable
   gsap.registerPlugin(ST);
+  // iOS/Android: the address bar showing/hiding resizes the viewport on every scroll;
+  // don't re-layout for that (it caused jumps), and keep native momentum scrolling.
+  ST.config({ ignoreMobileResize: true });
+  const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
   const W = window.World || { setTarget() {}, setOpacity() {}, setZoom() {} };
   const reduced = window.DE && window.DE.reducedMotion;
   const root = document.documentElement;
@@ -78,7 +82,7 @@
       });
       points.push(1);
     },
-    snap: {
+    snap: touch ? undefined : {
       snapTo: (v, self) => {
         const eps = 0.002;
         if (self.direction > 0) return points.find((p) => p >= v - eps) ?? 1;
@@ -118,6 +122,11 @@
   gsap.utils.toArray(".section .reveal:not(.contact__card)").forEach((el) => {
     const isTl = el.classList.contains("tl");
     if (isTl) side *= -1;
+    if (touch) { // phones: light 2D entrance (3D layers per card exhaust iOS GPU memory)
+      gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, ease: "power2.out",
+        scrollTrigger: { trigger: el, start: "top 98%", end: "top 70%", scrub: 0.5 } });
+      return;
+    }
     gsap.fromTo(el,
       { opacity: 0, y: 120, z: -180, rotateX: 20, rotateY: isTl ? side * 16 : 0, transformPerspective: 1100, transformOrigin: "50% 100%" },
       { opacity: 1, y: 0, z: 0, rotateX: 0, rotateY: 0, ease: "power2.out",

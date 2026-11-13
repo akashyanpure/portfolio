@@ -213,8 +213,13 @@
   const st = { target: 0, cur: 0, opT: 1, op: 1, zoomT: 0, zoom: 0, mx: 0, my: 0, sx: 0, sy: 0 };
   addEventListener("pointermove", (e) => { st.mx = e.clientX / innerWidth - 0.5; st.my = e.clientY / innerHeight - 0.5; }, { passive: true });
 
+  let lastW = 0, lastH = 0;
   function resize() {
     const w = innerWidth, h = innerHeight;
+    // ignore mobile address-bar show/hide (height-only jitter): re-allocating the
+    // WebGL buffer on every scroll causes flicker and memory churn on iOS
+    if (w === lastW && Math.abs(h - lastH) < 160) return;
+    lastW = w; lastH = h;
     const pr = Math.min(devicePixelRatio || 1, small ? 1.5 : 1.75);
     renderer.setPixelRatio(pr);
     renderer.setSize(w, h, false);
@@ -295,6 +300,8 @@
   function start() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
   function stop() { cancelAnimationFrame(raf); raf = 0; }
   document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+  canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); stop(); canvas.style.opacity = "0"; });
+  canvas.addEventListener("webglcontextrestored", () => { canvas.style.opacity = ""; start(); });
   start();
 
   window.World = {

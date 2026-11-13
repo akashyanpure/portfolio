@@ -294,6 +294,23 @@
   mqSmall.addEventListener("change", startSwap);
   startSwap();
 
+  // back-to-top button with scroll-progress ring
+  const toTop = document.getElementById("toTop");
+  const toTopRing = document.getElementById("toTopProgress");
+  const RING = 2 * Math.PI * 21;
+  function updateToTop() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const p = max > 0 ? Math.min(1, scrollY / max) : 0;
+    toTop.classList.toggle("is-visible", scrollY > innerHeight * 0.8);
+    toTopRing.style.strokeDashoffset = String(RING * (1 - p));
+  }
+  addEventListener("scroll", updateToTop, { passive: true });
+  updateToTop();
+  toTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    history.replaceState(null, "", location.pathname + location.search);
+  });
+
   // copy email
   const copyBtn = document.getElementById("copyEmail");
   copyBtn.addEventListener("click", async () => {
