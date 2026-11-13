@@ -218,6 +218,8 @@ b, strong { color: #fff; font-weight: 600; }
   font: 500 .74rem var(--font-mono); padding: 6px 11px; border-radius: 999px; white-space: nowrap;
   background: rgba(8, 12, 23, .88); border: 1px solid var(--line-strong); color: var(--text);
 }
+.orbit__chip { transition: opacity .38s ease; }
+.orbit__chip.is-swap { opacity: 0; }
 @keyframes orbit { to { transform: rotate(360deg); } }
 @keyframes counter {
   from { transform: rotate(var(--a)) translateY(var(--r)) rotate(calc(-1 * var(--a))) rotate(0deg); }
@@ -230,6 +232,10 @@ b, strong { color: #fff; font-weight: 600; }
   background: rgba(8,12,23,.92); border: 1px solid rgba(74,222,128,.35); color: var(--muted);
 }
 .holo__badge b { color: var(--green); font-weight: 500; }
+.orbit--outer { --r: -270px; animation: orbit 56s linear infinite reverse; }
+.orbit--outer .orbit__chip { animation: counter 56s linear infinite reverse; font-size: .68rem; padding: 5px 10px; color: var(--muted); border-color: rgba(167,139,250,.3); }
+@media (max-width: 1100px) { .orbit--outer { --r: -248px; } }
+@media (max-width: 560px) { .orbit--outer { display: none; } }
 @media (max-width: 960px) {
   .hero__inner { grid-template-columns: 1fr; }
   .hero__visual { order: -1; }
@@ -274,6 +280,7 @@ b, strong { color: #fff; font-weight: 600; }
 .section p, .section li, .section h2, .section h3 { text-shadow: 0 0 14px rgba(5,7,13,.9), 0 0 3px rgba(5,7,13,.8); }
 .chapter__body { text-shadow: 0 0 14px rgba(5,7,13,.9); }
 
+.gsap-on, .gsap-on body { scroll-behavior: auto; }
 /* GSAP drives entrances when available: neutralise the CSS fallback */
 .gsap-on .reveal { opacity: 1; transform: none; transition: none; }
 

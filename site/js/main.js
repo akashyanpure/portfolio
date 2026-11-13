@@ -268,6 +268,32 @@
   }, { threshold: 0.3 });
   tio.observe(term);
 
+  // phones show one ring: its chips take turns swapping to the outer-ring names,
+  // so every technology still appears around the photo
+  const mqSmall = matchMedia("(max-width: 560px)");
+  const innerChips = [...document.querySelectorAll(".orbit:not(.orbit--outer) .orbit__chip")];
+  const outerNames = [...document.querySelectorAll(".orbit--outer .orbit__chip")].map((c) => c.textContent);
+  const originalNames = innerChips.map((c) => c.textContent);
+  let swapTimer = 0;
+  function startSwap() {
+    clearInterval(swapTimer);
+    innerChips.forEach((c, i) => { c.textContent = originalNames[i]; c.classList.remove("is-swap"); });
+    if (!mqSmall.matches || reducedMotion || !innerChips.length) return;
+    const queue = outerNames.slice();
+    let tick = 0;
+    swapTimer = setInterval(() => {
+      const chip = innerChips[tick++ % innerChips.length];
+      chip.classList.add("is-swap");
+      setTimeout(() => {
+        queue.push(chip.textContent);
+        chip.textContent = queue.shift();
+        chip.classList.remove("is-swap");
+      }, 380);
+    }, 1300);
+  }
+  mqSmall.addEventListener("change", startSwap);
+  startSwap();
+
   // copy email
   const copyBtn = document.getElementById("copyEmail");
   copyBtn.addEventListener("click", async () => {

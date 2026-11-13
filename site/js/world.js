@@ -18,7 +18,7 @@
 
   const reduced = window.DE && window.DE.reducedMotion;
   const small = Math.min(innerWidth, innerHeight) < 700;
-  const N = small ? 4500 : 8000;
+  const N = small ? 3200 : 8000; // fewer, finer dots on phones so shapes stay crisp
   const TAU = Math.PI * 2;
 
   const scene = new THREE.Scene();
@@ -178,14 +178,14 @@
   geo.setAttribute("aRand", new THREE.BufferAttribute(rnd, 1));
 
   const uniforms = {
-    uTime: { value: 0 }, uSize: { value: small ? 4.3 : 4.1 }, uPR: { value: 1 },
+    uTime: { value: 0 }, uSize: { value: 4.1 }, uPR: { value: 1 }, uFit: { value: 1 },
     uOpacity: { value: 1 }, uPulse: { value: 0 },
   };
   const mat = new THREE.ShaderMaterial({
     uniforms, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
     vertexShader: `
       attribute vec3 aColor; attribute float aRand;
-      uniform float uTime, uSize, uPR, uPulse;
+      uniform float uTime, uSize, uPR, uPulse, uFit;
       varying vec3 vColor; varying float vFade;
       void main(){
         vec4 mv = modelViewMatrix * vec4(position, 1.0);
@@ -193,7 +193,7 @@
         float tw = 0.78 + 0.22 * sin(uTime * 1.7 + aRand * 60.0);
         float wave = pow(max(0.0, sin(position.x * 0.8 - uTime * 2.6)), 8.0);
         float pulse = 1.0 + uPulse * 1.4 * wave;
-        gl_PointSize = uSize * uPR * (0.55 + aRand * 0.9) * tw * pulse * (12.0 / -mv.z);
+        gl_PointSize = uSize * uPR * uFit * (0.55 + aRand * 0.9) * tw * pulse * (12.0 / -mv.z);
         vColor = aColor * 1.45 * (1.0 + uPulse * 0.8 * wave);
         vFade = smoothstep(42.0, 6.0, -mv.z);
       }`,
@@ -266,7 +266,9 @@
     // framing
     const ca = cfg[a], cb = cfg[b], ts = smooth(t);
     const aspect = camera.aspect, wide = aspect > 1.05;
-    const fit = Math.max(0.42, Math.min(1, aspect / 1.55));
+    const fit = Math.max(0.5, Math.min(1, aspect / 1.55));
+    // dot size follows the shape scale, otherwise small screens turn shapes into blobs
+    uniforms.uFit.value = Math.max(0.52, Math.min(1, aspect / 1.2));
     const s = lerp(ca.s, cb.s, ts) * fit;
     group.scale.setScalar(s * (wide ? 1 : 1.0));
     const ox = lerp(ca.ox, cb.ox, ts);
