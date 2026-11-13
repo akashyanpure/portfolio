@@ -2,7 +2,7 @@
 
 Personal portfolio of Akash Yanpure, Data Engineer. Live at **https://www.akashyanpure.com**.
 
-Hand-built static site (HTML, CSS, Canvas, WebGL), so there is no build step. Three.js r128 and GSAP 3.12.5 load from cdnjs with integrity hashes.
+Hand-built static site (HTML, CSS, Canvas, WebGL), so there is no build step. Three.js r128 and GSAP 3.12.5 (cdnjs) and Lenis 1.1.13 (jsDelivr) load with integrity hashes; fonts are self-hosted in `site/fonts/` (SIL OFL) with metric-matched fallbacks.
 
 ```
 site/
@@ -20,7 +20,7 @@ site/
 
 ## Local preview
 
-Open `site/index.html` in a browser, or run `npx serve site` (or `python -m http.server -d site`).
+Run `python -m http.server 8000 -d site` and open http://localhost:8000 (opening the file directly works, but browsers block self-hosted fonts over `file://`, so text shows in the fallback fonts).
 
 ## Deploy
 

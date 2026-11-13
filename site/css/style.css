@@ -1,6 +1,37 @@
 /* =========================================================
    Akash Yanpure — portfolio
    ========================================================= */
+
+/* self-hosted fonts (SIL OFL), preloaded in index.html so text never re-flows on load */
+/* metric-matched fallbacks: until the web fonts arrive, local fonts are scaled to occupy
+   exactly the same space, so the swap changes letter shapes but never moves the layout */
+@font-face { font-family: "Inter Fallback"; src: local("Arial"), local("ArialMT"), local("Helvetica"); size-adjust: 106.41%; ascent-override: 91.16%; descent-override: 22.55%; line-gap-override: 0%; }
+@font-face { font-family: "Space Grotesk Fallback"; src: local("Arial Bold"), local("Arial-BoldMT"), local("Arial"); size-adjust: 101.96%; ascent-override: 96.12%; descent-override: 28.44%; line-gap-override: 0%; }
+@font-face { font-family: "JetBrains Mono Fallback"; src: local("Courier New"), local("CourierNewPSMT"); size-adjust: 99.98%; ascent-override: 102.02%; descent-override: 30%; line-gap-override: 0%; }
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url(../fonts/inter-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url(../fonts/jetbrains-mono-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: swap;
+  src: url(../fonts/space-grotesk-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
 :root {
   --bg: #05070d;
   --bg-2: #080c17;
@@ -18,9 +49,9 @@
   --red: #f87171;
   --grad: linear-gradient(100deg, #22d3ee 0%, #818cf8 50%, #f472b6 100%);
   --radius: 18px;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-head: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --font-body: "Inter", "Inter Fallback", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-head: "Space Grotesk", "Space Grotesk Fallback", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "JetBrains Mono Fallback", ui-monospace, "SFMono-Regular", Consolas, monospace;
   --nav-h: 68px;
   color-scheme: dark;
 }
@@ -173,6 +204,9 @@ b, strong { color: #fff; font-weight: 600; }
 .hero__role .sep { color: var(--cyan); margin: 0 6px; }
 .hero__lead { color: #a9b5c8; font-size: clamp(1rem, 1.4vw, 1.12rem); max-width: 680px; margin: 0 0 20px; }
 .hero__typed { color: var(--text); font-size: .95rem; margin: 0 0 30px; min-height: 1.6em; }
+/* reserve two lines on narrow screens so the typing effect never changes page height
+   (iOS Safari has no scroll anchoring, so height changes above the fold make the page jump) */
+@media (max-width: 600px) { .hero__typed { min-height: 3.3em; } }
 .prompt { color: var(--pink); }
 .typed { color: var(--cyan); }
 .caret { color: var(--cyan); animation: blink 1s steps(1) infinite; }
@@ -195,11 +229,11 @@ b, strong { color: #fff; font-weight: 600; }
   background: linear-gradient(180deg, transparent 62%, rgba(5,7,13,.6)), repeating-linear-gradient(0deg, rgba(255,255,255,.02) 0 1px, transparent 1px 3px);
 }
 .holo__scan {
-  position: absolute; left: 0; right: 0; height: 30%; top: -30%; pointer-events: none; z-index: 2;
+  position: absolute; left: 0; right: 0; height: 30%; top: 0; pointer-events: none; z-index: 2; transform: translateY(-100%); will-change: transform;
   background: linear-gradient(180deg, transparent, rgba(34,211,238,.14) 80%, rgba(34,211,238,.45) 99%, transparent);
   animation: scan 5.5s cubic-bezier(.4,0,.2,1) infinite;
 }
-@keyframes scan { 0% { top: -30%; } 60%, 100% { top: 110%; } }
+@keyframes scan { 0% { transform: translateY(-100%); } 60%, 100% { transform: translateY(370%); } }
 .holo__corner { position: absolute; width: 22px; height: 22px; border: 2px solid var(--cyan); z-index: 3; }
 .holo__corner--tl { top: 10px; left: 10px; border-right: 0; border-bottom: 0; border-radius: 8px 0 0 0; }
 .holo__corner--tr { top: 10px; right: 10px; border-left: 0; border-bottom: 0; border-radius: 0 8px 0 0; }
@@ -256,7 +290,7 @@ b, strong { color: #fff; font-weight: 600; }
 @media (max-width: 760px) { .hero::before { background: radial-gradient(ellipse 90% 60% at 50% 48%, rgba(5,7,13,.78), rgba(5,7,13,.35) 75%, transparent); } }
 
 /* ---------- story chapters (sticky, scroll-scrubbed) ---------- */
-.chapter { position: relative; height: 165vh; }
+.chapter { position: relative; height: 135vh; }
 .chapter__sticky { position: sticky; top: 0; height: 100vh; height: 100svh; display: flex; align-items: center; overflow: hidden; perspective: 900px; }
 .chapter__sticky::before { /* left-side scrim so copy reads over the 3D scene */
   content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -270,7 +304,9 @@ b, strong { color: #fff; font-weight: 600; }
 .chapter__chips span { font-size: .8rem; padding: 7px 12px; }
 .chips span.cert { border-color: rgba(74,222,128,.45); color: var(--green); background: rgba(74,222,128,.07); }
 @media (max-width: 760px) {
-  .chapter { height: 150vh; }
+  /* phones: no pinning at all, chapters flow with native scrolling */
+  .chapter { height: auto; }
+  .chapter__sticky { position: relative; height: auto; min-height: 100svh; }
   .chapter__title, .chapter__body { max-width: none; }
   .chapter__sticky { align-items: flex-start; padding-top: calc(var(--nav-h) + 28px); }
   .chapter__sticky::before { background: linear-gradient(180deg, rgba(5,7,13,.85) 0%, rgba(5,7,13,.55) 45%, transparent 70%); }
@@ -281,6 +317,11 @@ b, strong { color: #fff; font-weight: 600; }
 .chapter__body { text-shadow: 0 0 14px rgba(5,7,13,.9); }
 
 .gsap-on, .gsap-on body { scroll-behavior: auto; }
+/* Lenis (desktop smooth wheel) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
 /* GSAP drives entrances when available: neutralise the CSS fallback */
 .gsap-on .reveal { opacity: 1; transform: none; transition: none; }
 

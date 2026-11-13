@@ -307,7 +307,8 @@
   addEventListener("scroll", updateToTop, { passive: true });
   updateToTop();
   toTop.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
+    if (window.__lenis) window.__lenis.scrollTo(0, { duration: 1.4 });
+    else window.scrollTo({ top: 0, behavior: reducedMotion ? "auto" : "smooth" });
     history.replaceState(null, "", location.pathname + location.search);
   });
 

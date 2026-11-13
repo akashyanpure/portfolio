@@ -1,147 +1,107 @@
 /* =========================================================
-   Story — Apple-style scroll choreography (GSAP ScrollTrigger)
-   - hero title scales/fades away as the 3D world zooms in
-   - each chapter morphs the world into its shape, and its
-     headline words flip in from depth, then exit
-   - every content block below tilts in from 3D space
+   Story — scroll choreography (GSAP ScrollTrigger + Lenis)
+   Principles that keep scrolling feeling natural:
+   - the page always moves 1:1 with the user's input (no snapping, no hijack)
+   - desktop wheels get inertial smoothing (Lenis); touch keeps native momentum
+   - text/cards animate on a timer once they come into view, rather than
+     being scrubbed to the scroll position, so nothing lags behind the hand
+   - only the background 3D world is scroll-linked
    ========================================================= */
 (function () {
   "use strict";
   const gsap = window.gsap, ST = window.ScrollTrigger;
   if (!gsap || !ST) return; // CSS/IO fallback in main.js keeps the page usable
   gsap.registerPlugin(ST);
-  // iOS/Android: the address bar showing/hiding resizes the viewport on every scroll;
-  // don't re-layout for that (it caused jumps), and keep native momentum scrolling.
+  // mobile address bar show/hide resizes the viewport constantly: don't re-layout for it
   ST.config({ ignoreMobileResize: true });
   const touch = matchMedia("(hover: none) and (pointer: coarse)").matches;
   const W = window.World || { setTarget() {}, setOpacity() {}, setZoom() {} };
   const reduced = window.DE && window.DE.reducedMotion;
-  const root = document.documentElement;
-  root.classList.add("gsap-on");
+  document.documentElement.classList.add("gsap-on");
 
-  if (reduced) {
-    // still drive the world's shape from scroll, but no motion-heavy effects
-    document.querySelectorAll(".chapter").forEach((ch) => {
-      const shape = +ch.dataset.shape;
-      ST.create({ trigger: ch, start: "top 60%", end: "bottom 40%", onToggle: (s) => s.isActive && W.setTarget(shape) });
-    });
-    ST.create({ trigger: "#about", start: "top 70%", onEnter: () => { W.setTarget(6); W.setOpacity(0.5); }, onLeaveBack: () => { W.setTarget(5); W.setOpacity(1); } });
-    return;
+  /* ---------- smooth, inertial wheel scrolling on desktop ---------- */
+  let lenis = null;
+  if (!touch && !reduced && window.Lenis) {
+    lenis = new window.Lenis({ lerp: 0.11, smoothWheel: true, wheelMultiplier: 1 });
+    lenis.on("scroll", ST.update);
+    gsap.ticker.add((t) => lenis.raf(t * 1000));
+    gsap.ticker.lagSmoothing(0);
+    window.__lenis = lenis;
   }
 
-  /* ---------- hero exit ---------- */
-  gsap.to(".hero__inner", {
-    scale: 1.08, y: -80, opacity: 0, ease: "none",
-    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 15%", scrub: true },
-  });
-  gsap.to(".hero__stats", {
-    y: -40, opacity: 0, ease: "none",
-    scrollTrigger: { trigger: ".hero", start: "20% top", end: "bottom 20%", scrub: true },
-  });
-  ST.create({ trigger: ".hero", start: "top top", end: "bottom top", scrub: true, onUpdate: (s) => W.setZoom(-s.progress * 3.5) });
-
-  /* ---------- chapters ---------- */
-  const holds = []; // {tl} per chapter, used to compute snap points
-  document.querySelectorAll(".chapter").forEach((ch) => {
-    const shape = +ch.dataset.shape;
-    // morph into this chapter's shape while it scrolls into view
-    ST.create({
-      trigger: ch, start: "top bottom", end: "top 40%",
-      onUpdate: (s) => W.setTarget(shape - 1 + s.progress),
-    });
-
-    const inner = ch.querySelector(".chapter__inner");
-    const kicker = ch.querySelector(".chapter__kicker");
-    const words = ch.querySelectorAll(".chapter__title > span");
-    const rest = ch.querySelectorAll(".chapter__body, .chapter__chips");
-    const tl = gsap.timeline({ scrollTrigger: { trigger: ch, start: "top 75%", end: "bottom bottom", scrub: 0.5 } });
-    holds.push(tl);
-    tl
-      .from(kicker, { opacity: 0, y: 30, duration: 0.4 })
-      .from(words, { opacity: 0, y: 110, z: -260, rotateX: -80, transformOrigin: "50% 100%", stagger: 0.18, duration: 0.6, ease: "power3.out" }, "<0.1")
-      .from(rest, { opacity: 0, y: 50, stagger: 0.15, duration: 0.6 }, "-=0.3")
-      .addLabel("hold")
-      .to({}, { duration: 1.0 })
-      .to(inner, { opacity: 0, y: -90, z: -120, rotateX: 14, duration: 0.6, ease: "power2.in" });
-  });
-
-  /* ---------- snap: never rest between chapters ----------
-     When scrolling stops anywhere from the hero to About, glide to the next
-     fully-formed chapter in the direction of travel (text crisp, shape built). */
-  let points = [0];
-  const story = ST.create({
-    start: 0,
-    end: () => document.getElementById("about").offsetTop,
-    onRefresh: (self) => {
-      const span = self.end - self.start || 1;
-      points = [0];
-      holds.forEach((tl) => {
-        const st = tl.scrollTrigger;
-        const frac = (tl.labels.hold + 0.35) / tl.duration();
-        points.push(Math.min(1, Math.max(0, (st.start + (st.end - st.start) * frac - self.start) / span)));
-      });
-      points.push(1);
-    },
-    snap: touch ? undefined : {
-      snapTo: (v, self) => {
-        const eps = 0.002;
-        if (self.direction > 0) return points.find((p) => p >= v - eps) ?? 1;
-        for (let i = points.length - 1; i >= 0; i--) if (points[i] <= v + eps) return points[i];
-        return 0;
-      },
-      duration: { min: 0.45, max: 1.0 },
-      delay: 0.06,
-      ease: "power2.inOut",
-      inertia: false,
-    },
-  });
-
-  // menu / CTA anchor links: smooth glide in JS (CSS smooth-scroll would fight the snap)
+  // in-page links glide (Lenis on desktop, native smooth elsewhere)
   document.addEventListener("click", (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
     const id = a.getAttribute("href").slice(1);
-    const el = id ? document.getElementById(id) : document.body;
-    if (!el) return;
+    const el = id && id !== "top" ? document.getElementById(id) : null;
+    if (id && id !== "top" && !el) return;
     e.preventDefault();
     const navH = document.getElementById("nav").offsetHeight;
-    let y = id === "top" || !id ? 0 : el.getBoundingClientRect().top + scrollY - navH + 1;
-    if (id === "story") y = points[1] * (story.end - story.start) + story.start;
-    window.scrollTo({ top: y, behavior: "smooth" });
-    history.replaceState(null, "", "#" + id);
+    if (lenis) lenis.scrollTo(el || 0, { offset: el ? -navH : 0, duration: 1.2 });
+    else window.scrollTo({ top: el ? el.getBoundingClientRect().top + scrollY - navH : 0, behavior: reduced ? "auto" : "smooth" });
+    history.replaceState(null, "", id ? "#" + id : location.pathname);
   });
 
-  /* ---------- leaving the story: world becomes an ambient ring ---------- */
+  /* ---------- background world: the only scroll-linked part ---------- */
+  ST.create({ trigger: ".hero", start: "top top", end: "bottom top", onUpdate: (s) => W.setZoom(-s.progress * 3.5) });
+  document.querySelectorAll(".chapter").forEach((ch) => {
+    const shape = +ch.dataset.shape;
+    ST.create({ trigger: ch, start: "top bottom", end: "top 40%", onUpdate: (s) => W.setTarget(shape - 1 + s.progress) });
+  });
   ST.create({
     trigger: "#about", start: "top bottom", end: "top 25%",
     onUpdate: (s) => { W.setTarget(5 + s.progress); W.setOpacity(1 - 0.5 * s.progress); },
   });
 
-  /* ---------- 3D entrance for every content block ---------- */
+  if (reduced) return; // content simply stays visible
+
+  /* ---------- hero gently recedes as you leave it (desktop only; phones scroll it normally) ---------- */
+  if (!touch) gsap.to(".hero__inner", {
+    y: -60, opacity: 0, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom 10%", scrub: true },
+  });
+  if (!touch) gsap.to(".hero__stats", {
+    y: -30, opacity: 0, ease: "none",
+    scrollTrigger: { trigger: ".hero", start: "25% top", end: "bottom 15%", scrub: true },
+  });
+
+  /* ---------- chapter headlines: play once in view, reverse when scrolled back ---------- */
+  document.querySelectorAll(".chapter").forEach((ch) => {
+    const kicker = ch.querySelector(".chapter__kicker");
+    const words = ch.querySelectorAll(".chapter__title > span");
+    const rest = ch.querySelectorAll(".chapter__body, .chapter__chips");
+    gsap.timeline({ scrollTrigger: { trigger: ch, start: touch ? "top 75%" : "top 55%", toggleActions: "play none none reverse" } })
+      .from(kicker, { opacity: 0, y: touch ? 0 : 24, duration: 0.45, ease: "power2.out" })
+      .from(words, touch
+        ? { opacity: 0, stagger: 0.1, duration: 0.5, ease: "power2.out" }
+        : { opacity: 0, y: 90, z: -200, rotateX: -70, transformOrigin: "50% 100%", stagger: 0.12, duration: 0.85, ease: "power3.out" }, "-=0.25")
+      .from(rest, { opacity: 0, y: touch ? 0 : 30, stagger: 0.1, duration: 0.6, ease: "power2.out" }, "-=0.5");
+  });
+
+  /* ---------- content blocks: one-shot entrance as they appear ---------- */
   let side = 1;
   gsap.utils.toArray(".section .reveal:not(.contact__card)").forEach((el) => {
     const isTl = el.classList.contains("tl");
     if (isTl) side *= -1;
-    if (touch) { // phones: light 2D entrance (3D layers per card exhaust iOS GPU memory)
-      gsap.fromTo(el, { opacity: 0, y: 50 }, { opacity: 1, y: 0, ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 98%", end: "top 70%", scrub: 0.5 } });
-      return;
-    }
-    gsap.fromTo(el,
-      { opacity: 0, y: 120, z: -180, rotateX: 20, rotateY: isTl ? side * 16 : 0, transformPerspective: 1100, transformOrigin: "50% 100%" },
-      { opacity: 1, y: 0, z: 0, rotateX: 0, rotateY: 0, ease: "power2.out",
-        scrollTrigger: { trigger: el, start: "top 102%", end: "top 62%", scrub: 0.7 } });
+    const from = touch
+      ? { opacity: 0 }
+      : { opacity: 0, y: 70, rotateX: 14, rotateY: isTl ? side * 10 : 0, transformPerspective: 1100, transformOrigin: "50% 100%" };
+    gsap.fromTo(el, from, {
+      opacity: 1, y: 0, rotateX: 0, rotateY: 0, duration: touch ? 0.6 : 0.9, ease: "power3.out",
+      clearProps: touch ? "transform" : "transform,transformPerspective",
+      scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" },
+    });
   });
 
-  // timeline spine draws itself as you scroll
+  // timeline spine draws itself as you scroll (decorative, direct)
   const tl = document.getElementById("timeline");
-  if (tl) {
-    gsap.fromTo(tl, { "--spine": 0 }, { "--spine": 1, ease: "none", scrollTrigger: { trigger: tl, start: "top 75%", end: "bottom 60%", scrub: true } });
-  }
+  if (tl) gsap.fromTo(tl, { "--spine": 0 }, { "--spine": 1, ease: "none", scrollTrigger: { trigger: tl, start: "top 75%", end: "bottom 60%", scrub: true } });
 
-  // contact card zooms forward like a product reveal
-  gsap.fromTo(".contact__card", { scale: 0.82, rotateX: 25, transformPerspective: 1000 },
-    { scale: 1, rotateX: 0, ease: "none", scrollTrigger: { trigger: ".contact", start: "top bottom", end: "center 60%", scrub: 0.8 } });
+  // contact card rises into place
+  gsap.fromTo(".contact__card", touch ? { opacity: 0 } : { opacity: 0, y: 60, scale: 0.94 },
+    { opacity: 1, y: 0, scale: 1, duration: 0.9, ease: "power3.out", clearProps: "transform",
+      scrollTrigger: { trigger: ".contact", start: "top 80%", toggleActions: "play none none none" } });
 
   addEventListener("load", () => ST.refresh());
 })();
